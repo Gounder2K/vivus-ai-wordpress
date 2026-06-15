@@ -1,0 +1,20 @@
+/*
+Theme Name: Vivus AI
+Theme URI: https://github.com/prateek/vivus-ai-wordpress
+Author: Prateek Gounder
+Author URI: https://github.com/prateek
+Description: Custom, hand-built marketing theme for Vivus AI — an AI assistant for clinical guidance and medical workflow support. Built from scratch with PHP, Bootstrap 5.3, jQuery and HTML5 (no page builders).
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.5
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: vivus-ai
+Tags: custom-theme, marketing, bootstrap, responsive, healthcare
+*/
+
+/*
+ * Visual styling lives in assets/css/theme.css (enqueued from functions.php).
+ * This file only carries the required WordPress theme header.
+ */

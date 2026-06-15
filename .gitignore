@@ -1,0 +1,17 @@
+# Local environment overrides
+.env
+
+# WordPress core + uploads live in Docker volumes, never committed.
+# Only our custom theme + plugin are tracked.
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+.idea/
+.vscode/
+
+# Dependency / build artefacts (none expected, but just in case)
+node_modules/
+vendor/

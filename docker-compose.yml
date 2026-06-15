@@ -1,0 +1,86 @@
+# Vivus AI — local WordPress stack.
+#
+# Brings up MySQL + WordPress and auto-provisions the site (installs WP,
+# activates the custom theme & plugin, creates pages and the nav menu) via
+# a one-shot wp-cli container.
+#
+#   docker compose up -d        # start everything + provision
+#   open http://localhost:8080  # the site
+#   open http://localhost:8080/wp-admin  (admin / admin by default)
+#
+# Override credentials/ports by copying .env.example to .env.
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: vivus_db
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: "${DB_NAME:-vivus_wp}"
+      MYSQL_USER: "${DB_USER:-vivus}"
+      MYSQL_PASSWORD: "${DB_PASSWORD:-vivus_pass}"
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-root_pass}"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_ROOT_PASSWORD:-root_pass}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  wordpress:
+    image: wordpress:6.5-php8.2-apache
+    container_name: vivus_wp
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "${WP_PORT:-8080}:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: "${DB_NAME:-vivus_wp}"
+      WORDPRESS_DB_USER: "${DB_USER:-vivus}"
+      WORDPRESS_DB_PASSWORD: "${DB_PASSWORD:-vivus_pass}"
+      WORDPRESS_DEBUG: "${WP_DEBUG:-1}"
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_DEBUG_LOG', true);
+        define('WP_DEBUG_DISPLAY', false);
+        define('DISALLOW_FILE_EDIT', true);
+    volumes:
+      - wp_data:/var/www/html
+      # Mount our custom code straight into wp-content (live editing).
+      - ./wp-content/themes/vivus-ai:/var/www/html/wp-content/themes/vivus-ai
+      - ./wp-content/plugins/vivus-leads:/var/www/html/wp-content/plugins/vivus-leads
+
+  wpcli:
+    image: wordpress:cli-php8.2
+    container_name: vivus_wpcli
+    depends_on:
+      db:
+        condition: service_healthy
+      wordpress:
+        condition: service_started
+    # Run as the same uid as the apache image so file perms line up.
+    user: "33:33"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: "${DB_NAME:-vivus_wp}"
+      WORDPRESS_DB_USER: "${DB_USER:-vivus}"
+      WORDPRESS_DB_PASSWORD: "${DB_PASSWORD:-vivus_pass}"
+      WP_URL: "http://localhost:${WP_PORT:-8080}"
+      WP_TITLE: "${WP_TITLE:-Vivus AI}"
+      WP_ADMIN_USER: "${WP_ADMIN_USER:-admin}"
+      WP_ADMIN_PASSWORD: "${WP_ADMIN_PASSWORD:-admin}"
+      WP_ADMIN_EMAIL: "${WP_ADMIN_EMAIL:-admin@vivus.local}"
+    volumes:
+      - wp_data:/var/www/html
+      - ./wp-content/themes/vivus-ai:/var/www/html/wp-content/themes/vivus-ai
+      - ./wp-content/plugins/vivus-leads:/var/www/html/wp-content/plugins/vivus-leads
+      - ./scripts:/scripts:ro
+    entrypoint: ["bash", "/scripts/provision.sh"]
+
+volumes:
+  db_data:
+  wp_data:

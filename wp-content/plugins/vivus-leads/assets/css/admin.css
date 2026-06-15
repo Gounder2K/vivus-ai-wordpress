@@ -1,0 +1,25 @@
+/* Vivus Leads — admin list styling. */
+
+.vivus-status {
+	display: inline-block;
+	padding: 0.15rem 0.55rem;
+	border-radius: 999px;
+	font-size: 0.78rem;
+	font-weight: 600;
+	line-height: 1.6;
+}
+
+.vivus-status--new       { background: #e7f0ff; color: #1d4ed8; }
+.vivus-status--contacted { background: #fff4d6; color: #92660a; }
+.vivus-status--closed    { background: #e3f6e9; color: #1f7a43; }
+.vivus-status--spam      { background: #fde2e2; color: #b91c1c; }
+
+.vivus-row-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.vivus-row-actions .button-link-delete {
+	color: #b32d2e;
+}

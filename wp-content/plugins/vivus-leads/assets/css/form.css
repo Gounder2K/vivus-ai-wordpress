@@ -1,0 +1,20 @@
+/* Vivus Leads — front-end form refinements.
+   Most form styling is provided by the theme (.vivus-form in theme.css);
+   this file only adds the bits the plugin needs to stand alone. */
+
+.vivus-form .is-invalid {
+	border-color: #dc3545 !important;
+	box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.12) !important;
+}
+
+.vivus-form__spinner {
+	width: 1.25rem;
+	height: 1.25rem;
+}
+
+/* Fallback styling so the form is usable even without the theme present. */
+.vivus-form .form-label {
+	display: inline-block;
+	margin-bottom: 0.35rem;
+	font-weight: 600;
+}
